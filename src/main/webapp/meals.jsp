@@ -25,7 +25,7 @@
     <tbody>
     <c:forEach var="meal" items="${meals}">
         <tr style="color: ${meal.excess ? 'red' : 'green'}">
-            <td><javatime:format value="${meal.dateTime}" pattern="yyyy-MM-dd hh:mm"/></td>
+            <td><javatime:format value="${meal.dateTime}" pattern="yyyy-MM-dd HH:mm"/></td>
             <td>${meal.description}</td>
             <td>${meal.calories}</td>
             <td>
