@@ -1,7 +1,11 @@
 package ru.javawebinar.topjava.service;
 
+import org.slf4j.Logger;
+import ru.javawebinar.topjava.dao.Dao;
+import ru.javawebinar.topjava.dao.MealDaoImp;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.MealTo;
+import ru.javawebinar.topjava.web.MealServlet;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,25 +15,36 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class MealService {
+import static org.slf4j.LoggerFactory.getLogger;
 
+public class MealService {
+    private static final Logger log = getLogger(MealServlet.class);
     public final int CALORIES_PER_DAY = 2000;
+    private final Dao<Meal,Integer> repository = new MealDaoImp();
 
     private static MealTo createTo(Meal meal, boolean excess) {
-        return new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
+        return new MealTo(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
     }
 
-    public List<Meal> getMeals() {
-        List<Meal> meals = Arrays.asList(
-                new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500),
-                new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000),
-                new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500),
-                new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Еда на граничное значение", 100),
-                new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000),
-                new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500),
-                new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410)
-        );
-        return meals;
+    public Meal getById (Integer id) {
+        return repository.read(id);
+    }
+
+    public List<Meal> getAllMeals() {
+        log.info("get all Meals from repo");
+        return repository.getAll();
+    }
+
+    public void saveMeal(Meal meal) {
+        if (meal.getId() == -1) {
+            repository.create(meal);
+        } else {
+            repository.update(meal);
+        }
+    }
+
+    public void deleteById(Integer id) {
+        repository.delete(id);
     }
 
     public List<MealTo> getMealToListFromMealList(List<Meal> meals) {
