@@ -4,13 +4,18 @@ import ru.javawebinar.topjava.model.Meal;
 
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class MealDaoImp implements Dao<Meal,Integer>{
+public class MealDaoCrud implements Dao<Meal, Integer> {
+    private final ConcurrentMap<Integer, Meal> meals = new ConcurrentHashMap<>();
+    private final AtomicInteger index = new AtomicInteger(0);
 
-    private final Map<Integer,Meal> meals = new HashMap<>(7);
 
-    public MealDaoImp() {
+    public MealDaoCrud() {
         create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500));
         create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000));
         create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500));
@@ -20,17 +25,9 @@ public class MealDaoImp implements Dao<Meal,Integer>{
         create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410));
     }
 
-    private Integer getNewId() {
-        if (meals.isEmpty()) {
-            return 0;
-        } else {
-            return Collections.max(meals.keySet()) + 1;
-        }
-    }
-
     @Override
     public Meal create(Meal meal) {
-        meal.setId(getNewId());
+        meal.setId(index.incrementAndGet());
         meals.put(meal.getId(), meal);
         return meal;
     }
@@ -42,7 +39,9 @@ public class MealDaoImp implements Dao<Meal,Integer>{
 
     @Override
     public Meal update(Meal meal) {
-        meals.put(meal.getId(), meal);
+        if (meal.getId() != null) {
+            meals.put(meal.getId(), meal);
+        }
         return meal;
     }
 
@@ -55,4 +54,5 @@ public class MealDaoImp implements Dao<Meal,Integer>{
     public List<Meal> getAll() {
         return new ArrayList<>(meals.values());
     }
+
 }

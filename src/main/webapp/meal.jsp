@@ -8,11 +8,11 @@
     <title>Meals</title>
 </head>
 <body>
-<h3><a href="index.html">Home</a></h3>
+<h3><a href="meals?action=meals">Home</a></h3>
 <hr>
 <h2>Meal</h2>
-<p>${meal.id == '-1' ? 'Новый' : meal.id}</p>
-<form action="meal" method="post">
+<p style="color: chocolate">${meal.id == '-1' ? 'НОВЫЙ' : ''}</p>
+<form action="meals" method="post">
     <input type="text" name="id" hidden value="${meal.id}">
     <p>
         <label for="dateTime">dateTime</label>
@@ -27,6 +27,7 @@
         <input id="calories" type="number" min="0" name="calories" value="${meal.calories}">
     </p>
     <p>
+        <h3><a href="meals?action=meals">Отмена</a></h3>
         <button type="submit">Записать</button>
     </p>
 </form>
