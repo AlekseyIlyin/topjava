@@ -6,9 +6,13 @@ import org.springframework.stereotype.Controller;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
+import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.web.SecurityUtil;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
 
 @Controller
 public class MealRestController {
@@ -19,9 +23,13 @@ public class MealRestController {
         this.service = service;
     }
 
-    public List<MealTo> getAll(int userId) {
+    public List<MealTo> getAll() {
         log.info("getAll");
-        return new ArrayList<>(service.getAllUserMeals(userId));
+        return MealsUtil.getTos(
+                service.getAll().stream()
+                        .filter(userMeal -> userMeal.getUserId() == SecurityUtil.authUserId())
+                        .sorted((meal1, meal2) -> meal2.getDateTime().compareTo(meal1.getDateTime()))
+                        .collect(Collectors.toList()), MealsUtil.DEFAULT_CALORIES_PER_DAY);
     }
 
     public Meal get(int id) {
@@ -31,7 +39,7 @@ public class MealRestController {
 
     public Meal create(Meal meal) {
         log.info("create {}", meal);
-        return service.create(meal);
+        return service.save(meal);
     }
 
     public void delete(int id) {
@@ -39,9 +47,9 @@ public class MealRestController {
         service.delete(id);
     }
 
-    public void update(Meal meal) {
-        log.info("update {}", meal);
-        service.update(meal);
+    public void update(Meal meal, int id) {
+        log.info("update {} with id={}", meal, id);
+        assureIdConsistent(meal, id);
+        service.save(meal);
     }
-
 }

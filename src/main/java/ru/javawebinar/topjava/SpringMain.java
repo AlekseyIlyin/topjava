@@ -4,6 +4,9 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
+import ru.javawebinar.topjava.repository.MealRepository;
+import ru.javawebinar.topjava.repository.inmemory.InMemoryMealRepository;
+import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 import ru.javawebinar.topjava.web.user.AdminRestController;
 
@@ -19,8 +22,7 @@ public class SpringMain {
 
             // test meal controller
             MealRestController mealRestController = appCtx.getBean(MealRestController.class);
-            mealRestController.getAll(1);
-            mealRestController.delete(1);
+            mealRestController.getAll();
             mealRestController.delete(1);
         }
     }
