@@ -28,40 +28,37 @@ public class MealRestController {
 
     public List<MealTo> getAll() {
         log.info("getAll");
-        return MealsUtil.getTos(service.getAll(getAuthUserId()), SecurityUtil.authUserCaloriesPerDay());
+        return MealsUtil.getTos(service.getAll(SecurityUtil.authUserId()), SecurityUtil.authUserCaloriesPerDay());
     }
 
     public List<MealTo> getForPeriod(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime) {
         log.info("getForPeriod");
-        return MealsUtil.filterByPredicate(
-                service.getAll(getAuthUserId()),
-                SecurityUtil.authUserCaloriesPerDay(),
-                meal -> meal.getDate().isAfter(startDate) && meal.getDate().isBefore(endDate) && DateTimeUtil.isBetweenHalfOpen(meal.getTime(), startTime, endTime));
+        return MealsUtil.getTos(service.getAll(SecurityUtil.authUserId(),
+                        meal -> meal.getDate().isAfter(startDate) &&
+                                meal.getDate().isBefore(endDate) &&
+                                DateTimeUtil.isBetweenHalfOpen(meal.getTime(), startTime, endTime)),
+                SecurityUtil.authUserCaloriesPerDay());
     }
 
     public Meal get(int id) {
         log.info("get {}", id);
-        return service.get(id, getAuthUserId());
+        return service.get(id, SecurityUtil.authUserId());
     }
 
     public Meal create(Meal meal) {
         log.info("create {}", meal);
         checkNew(meal);
-        return service.create(meal);
+        return service.create(meal, SecurityUtil.authUserId());
     }
 
     public void delete(int id) {
         log.info("delete {}", id);
-        service.delete(id, getAuthUserId());
+        service.delete(id, SecurityUtil.authUserId());
     }
 
     public void update(Meal meal, int id) {
         log.info("update {} with id={}", meal, id);
         assureIdConsistent(meal, id);
-        service.update(meal, getAuthUserId());
-    }
-
-    private int getAuthUserId() {
-        return SecurityUtil.authUserId();
+        service.update(meal, SecurityUtil.authUserId());
     }
 }

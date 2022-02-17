@@ -42,8 +42,8 @@ public class SpringMain {
 
             // update
             final int testCalories = 99_999;
-            meal.setCalories(testCalories);
-            mealRestController.update(meal, idMeal);
+            Meal testUpdateMeal = new Meal(meal.getId(), meal.getDateTime(), meal.getDescription(), testCalories, meal.getUserId());
+            mealRestController.update(testUpdateMeal, idMeal);
             meal = mealRestController.get(idMeal);
             System.out.println("method update is worked: " + (meal.getCalories() == testCalories));
 
@@ -51,14 +51,14 @@ public class SpringMain {
             mealRestController.delete(idMeal);
             try {
                 mealRestController.get(idMeal);
-            } catch (Exception e) {
+            } catch (NullPointerException e) {
                 System.out.println("method delete is worked: true");
             }
 
             // delete alien meal
             try {
                 mealRestController.delete(8); // alien meal with userId=2
-            } catch (Exception e) {
+            } catch (NullPointerException e) {
                 System.out.println("method delete alien meal is worked: true");
             }
         }

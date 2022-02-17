@@ -4,12 +4,13 @@ import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
-import ru.javawebinar.topjava.util.exception.NotFoundException;
 
-import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Repository
@@ -23,46 +24,44 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Meal save(Meal meal, int userId) {
-        if (meal.isNew()) {
+        if (meal.getUserId() != userId) {
+            return null;
+        } else if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
             repository.put(meal.getId(), meal);
             return meal;
         } else {
             // handle case: update, but not present in storage
-            mealFoundAndEnableAccess(meal, userId);
             return repository.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
         }
     }
 
     @Override
     public boolean delete(int id, int userId) {
-        // test access in get method
-        get(id, userId);
-        return repository.remove(id) != null;
+        return get(id, userId) != null && repository.remove(id) != null;
     }
 
     @Override
     public Meal get(int id, int userId) {
-        return mealFoundAndEnableAccess(repository.get(id), userId);
+        Meal meal = repository.get(id);
+        return meal != null && meal.getUserId() == userId ? meal : null;
     }
 
     @Override
-    public Collection<Meal> getAll(int userId) {
+    public List<Meal> getAll(int userId) {
         return repository.values().stream()
                 .filter(meal -> meal.getUserId() == userId)
-                .sorted((meal1, meal2) -> meal2.getDateTime().compareTo(meal1.getDateTime()))
+                .sorted(Comparator.reverseOrder())
                 .collect(Collectors.toList());
     }
 
-    private Meal mealFoundAndEnableAccess(Meal meal, int userId) {
-        if (meal == null || meal.getUserId() != userId) {
-            generateExceptionNotFoundOrDenied();
-        }
-        return meal;
-    }
-
-    private void generateExceptionNotFoundOrDenied() {
-        throw new NotFoundException("meal access denied or meal not found");
+    @Override
+    public List<Meal> getAll(int userId, Predicate<Meal> filter) {
+        return repository.values().stream()
+                .filter(meal -> meal.getUserId() == userId)
+                .filter(filter)
+                .sorted(Comparator.reverseOrder())
+                .collect(Collectors.toList());
     }
 }
 
