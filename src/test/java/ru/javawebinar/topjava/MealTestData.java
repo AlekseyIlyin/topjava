@@ -15,8 +15,6 @@ public class MealTestData {
 
     public static final int START_MEAL_SEQ = START_SEQ + 3;
     public static final int MEAL_ID = START_MEAL_SEQ;
-
-    public static final int NOT_FOUND = 1000;
     public static final Meal meal1 = new Meal(MEAL_ID, LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500);
     public static final Meal meal2 = new Meal(MEAL_ID + 1, LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Обед", 1000);
     public static final Meal meal3 = new Meal(MEAL_ID + 2, LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Ужин", 500);
@@ -24,7 +22,7 @@ public class MealTestData {
     public static final Meal meal5 = new Meal(MEAL_ID + 4, LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Завтрак", 1000);
     public static final Meal meal6 = new Meal(MEAL_ID + 5, LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Обед", 500);
     public static final Meal meal7 = new Meal(MEAL_ID + 6, LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Ужин", 410);
-
+    public static final int NOT_FOUND = 1000;
     public static final int MEAL_ADMIN_ID = START_MEAL_SEQ + 7;
     public static final Meal mealAlien1 = new Meal(MEAL_ADMIN_ID, LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Завтрак", 500);
 //    public static final Meal MEAL_2_ADMIN = new Meal(MEAL_ADMIN_ID + 1, LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500);
