@@ -21,12 +21,7 @@ public class DateTimeUtil {
     }
 
     public static LocalDateTime atStartOfNextDayOrMax(LocalDate localDate) {
-        LocalDateTime localDateTime = localDate != null ? localDate.plus(1, ChronoUnit.DAYS).atStartOfDay() : MAX_DATE;
-        if (localDate == null) {
-            return localDateTime;
-        } else {
-            return localDateTime.toLocalDate().isAfter(localDate) ? localDateTime.minusSeconds(1) : localDateTime;
-        }
+        return localDate != null ? localDate.plus(1, ChronoUnit.DAYS).atStartOfDay() : MAX_DATE;
     }
 
     public static String toString(LocalDateTime ldt) {
