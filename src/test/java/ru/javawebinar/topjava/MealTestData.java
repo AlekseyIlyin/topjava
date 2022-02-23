@@ -48,7 +48,7 @@ public class MealTestData {
 
     public static void assertMatch(Iterable<Meal> actual, Iterable<Meal> expected) {
         assertThat(actual)
-                .usingRecursiveFieldByFieldElementComparatorIgnoringFields()
+                .usingRecursiveFieldByFieldElementComparator()
                 .isEqualTo(expected);
     }
 }
