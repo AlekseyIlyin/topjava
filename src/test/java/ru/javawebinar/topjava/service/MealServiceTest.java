@@ -1,18 +1,24 @@
 package ru.javawebinar.topjava.service;
 
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
+import ru.javawebinar.topjava.TestTimeMeasurements;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -26,6 +32,22 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
+
+    private static List<String> logsByTests = new ArrayList<>();
+
+    @Rule
+    public final TestTimeMeasurements timeMeasurements = new TestTimeMeasurements(logsByTests);
+
+    @BeforeClass
+    public static void beforeClass() {
+        logsByTests = new ArrayList<>();
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        Logger logger = Logger.getLogger("ru.javawebinar.topjava.service.MealServiceTest");
+        logsByTests.forEach(logger::info);
+    }
 
     @Autowired
     private MealService service;
