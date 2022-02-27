@@ -1,8 +1,12 @@
 package ru.javawebinar.topjava.service;
 
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.bridge.SLF4JBridgeHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ContextConfiguration;
@@ -15,10 +19,7 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -33,24 +34,29 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
 
-    private static List<String> logsByTests = new ArrayList<>();
+    private static final Logger log = LoggerFactory.getLogger("ru.javawebinar.topjava.service.MealServiceTest");
+    private static final StringBuilder result = new StringBuilder();
+    private static long startTestTime;
 
     @Rule
-    public final TestTimeMeasurements timeMeasurements = new TestTimeMeasurements(logsByTests);
+    public final TestTimeMeasurements timeMeasurements = new TestTimeMeasurements(result);
+    @Autowired
+    private MealService service;
 
     @BeforeClass
     public static void beforeClass() {
-        logsByTests = new ArrayList<>();
+        startTestTime = System.nanoTime();
     }
 
     @AfterClass
     public static void afterClass() {
-        Logger logger = Logger.getLogger("ru.javawebinar.topjava.service.MealServiceTest");
-        logsByTests.forEach(logger::info);
+        result.append(
+                String.format(TestTimeMeasurements.FORMAT_STRING,
+                        "all test completed:",
+                        TimeUnit.SECONDS.convert(System.nanoTime() - startTestTime, TimeUnit.NANOSECONDS),
+                        "seconds"));
+        log.info(result.toString());
     }
-
-    @Autowired
-    private MealService service;
 
     @Test
     public void delete() {

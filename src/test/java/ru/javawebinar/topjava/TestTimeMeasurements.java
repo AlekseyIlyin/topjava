@@ -4,15 +4,16 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import java.util.Date;
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class TestTimeMeasurements implements TestRule {
 
-    private List<String> logsByTests;
+    public static final String FORMAT_STRING = "%-23s %5d %s";
 
-    public TestTimeMeasurements(List<String> logsByTests) {
-        this.logsByTests = logsByTests;
+    private StringBuilder sb;
+
+    public TestTimeMeasurements(StringBuilder sb) {
+        this.sb = sb;
     }
 
     @Override
@@ -20,9 +21,14 @@ public class TestTimeMeasurements implements TestRule {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                long startTime = new Date().getTime();
+                long startTime = System.nanoTime();
                 base.evaluate();
-                logsByTests.add(String.format("Test: %s evaluate on %d milliseconds", description.getMethodName(), (new Date().getTime()) - startTime));
+                sb.append(
+                        String.format(FORMAT_STRING,
+                                description.getMethodName(),
+                                TimeUnit.MILLISECONDS.convert(System.nanoTime() - startTime, TimeUnit.NANOSECONDS),
+                                "milliseconds"));
+                sb.append("\n");
             }
         };
     }
