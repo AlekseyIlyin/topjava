@@ -1,9 +1,11 @@
 package ru.javawebinar.topjava.service;
 
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.AssumptionViolatedException;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Stopwatch;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +15,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.javawebinar.topjava.TestTimeMeasurements;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
@@ -35,26 +36,41 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 public class MealServiceTest {
 
     private static final Logger log = LoggerFactory.getLogger("ru.javawebinar.topjava.service.MealServiceTest");
-    private static final StringBuilder result = new StringBuilder();
-    private static long startTestTime;
+    private static final StringBuilder result = new StringBuilder("\n\nTest results:\n----------------\n");
+    private static final String FORMAT_STRING = "%-23s %5d milliseconds %-12s\n";
 
     @Rule
-    public final TestTimeMeasurements timeMeasurements = new TestTimeMeasurements(result);
+    public final Stopwatch stopwatch = new Stopwatch() {
+        @Override
+        protected void succeeded(long nanos, Description description) {
+            collectResultAndOutLog(description, "success");
+        }
+
+        @Override
+        protected void failed(long nanos, Throwable e, Description description) {
+            collectResultAndOutLog(description, "fail");
+        }
+
+        @Override
+        protected void skipped(long nanos, AssumptionViolatedException e, Description description) {
+            collectResultAndOutLog(description, "scip");
+        }
+
+        private void collectResultAndOutLog(Description description, String testResult) {
+            String strLog = String.format(FORMAT_STRING,
+                    description.getMethodName(),
+                    this.runtime(TimeUnit.MILLISECONDS),
+                    testResult);
+            log.info("\n" + strLog);
+            result.append(strLog);
+        }
+    };
+
     @Autowired
     private MealService service;
 
-    @BeforeClass
-    public static void beforeClass() {
-        startTestTime = System.nanoTime();
-    }
-
     @AfterClass
     public static void afterClass() {
-        result.append(
-                String.format(TestTimeMeasurements.FORMAT_STRING,
-                        "all test completed:",
-                        TimeUnit.SECONDS.convert(System.nanoTime() - startTestTime, TimeUnit.NANOSECONDS),
-                        "seconds"));
         log.info(result.toString());
     }
 
