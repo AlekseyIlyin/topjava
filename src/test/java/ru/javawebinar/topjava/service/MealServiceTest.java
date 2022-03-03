@@ -36,31 +36,30 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 public class MealServiceTest {
 
     private static final Logger log = LoggerFactory.getLogger("ru.javawebinar.topjava.service.MealServiceTest");
-    private static final StringBuilder result = new StringBuilder("\n\nTest results:\n----------------\n");
-    private static final String FORMAT_STRING = "%-23s %5d milliseconds %-12s\n";
+    private static final StringBuilder result = new StringBuilder("\n\nTest results:\n------------\n");
+    private static final String FORMAT_STRING = "%-23s %5d ms\n";
 
     @Rule
     public final Stopwatch stopwatch = new Stopwatch() {
         @Override
         protected void succeeded(long nanos, Description description) {
-            collectResultAndOutLog(description, "success");
+            collectResultAndOutLog(description);
         }
 
         @Override
         protected void failed(long nanos, Throwable e, Description description) {
-            collectResultAndOutLog(description, "fail");
+            collectResultAndOutLog(description);
         }
 
         @Override
         protected void skipped(long nanos, AssumptionViolatedException e, Description description) {
-            collectResultAndOutLog(description, "scip");
+            collectResultAndOutLog(description);
         }
 
-        private void collectResultAndOutLog(Description description, String testResult) {
+        private void collectResultAndOutLog(Description description) {
             String strLog = String.format(FORMAT_STRING,
                     description.getMethodName(),
-                    this.runtime(TimeUnit.MILLISECONDS),
-                    testResult);
+                    this.runtime(TimeUnit.MILLISECONDS));
             log.info("\n" + strLog);
             result.append(strLog);
         }
