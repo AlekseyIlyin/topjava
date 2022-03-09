@@ -1,6 +1,8 @@
 package ru.javawebinar.topjava.repository.datajpa;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 
@@ -18,15 +20,14 @@ public class DataJpaMealRepository implements MealRepository {
         this.crudUserRepository = crudUserRepository;
     }
 
+    @Transactional
+    @Modifying
     @Override
     public Meal save(Meal meal, int userId) {
-        meal.setUser(crudUserRepository.getById(userId));
-        if (meal.isNew()) {
-            crudRepository.save(meal);
-            return meal;
-        } else if (get(meal.id(), userId) == null) {
+        if (!meal.isNew() && get(meal.id(), userId) == null) {
             return null;
         }
+        meal.setUser(crudUserRepository.getById(userId));
         return crudRepository.save(meal);
     }
 
