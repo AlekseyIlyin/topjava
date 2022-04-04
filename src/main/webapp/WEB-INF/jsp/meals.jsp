@@ -5,37 +5,50 @@
 
 <html>
 <jsp:include page="fragments/headTag.jsp"/>
-<head>
-    <link rel="stylesheet" href="webjars/datetimepicker/2.5.20-1/jquery.datetimepicker.css">
-    <script src="webjars/datetimepicker/2.5.20-1/build/jquery.datetimepicker.full.min.js" defer></script>
-</head>
 <body>
 <script src="resources/js/topjava.common.js" defer></script>
 <script src="resources/js/topjava.meals.js" defer></script>
+<jsp:include page="fragments/bodyHeader.jsp"/>
 
 <div class="jumbotron pt-4">
     <div class="container">
         <h3 class="text-center"><spring:message code="meal.title"/></h3>
-        <form method="get" action="/rest/profile/meals/filter">
-            <dl>
-                <dt><spring:message code="meal.startDate"/>:</dt>
-                <dd><input type="date" name="startDate" value="${param.startDate}"></dd>
-            </dl>
-            <dl>
-                <dt><spring:message code="meal.endDate"/>:</dt>
-                <dd><input type="date" name="endDate" value="${param.endDate}"></dd>
-            </dl>
-            <dl>
-                <dt><spring:message code="meal.startTime"/>:</dt>
-                <dd><input type="time" name="startTime" value="${param.startTime}"></dd>
-            </dl>
-            <dl>
-                <dt><spring:message code="meal.endTime"/>:</dt>
-                <dd><input type="time" name="endTime" value="${param.endTime}"></dd>
-            </dl>
-            <button type="submit"><spring:message code="meal.filter"/></button>
-        </form>
-        <hr>
+
+        <div class="card border-dark">
+            <div class="card-body pb-0">
+                <form id="filter">
+                    <div class="row">
+                        <div class="col-2">
+                            <label for="startDate">От даты (включая)</label>
+                            <input type="date" class="form-control" name="startDate" id="startDate" autocomplete="off">
+                        </div>
+                        <div class="col-2">
+                            <label for="endDate">До даты (включая)</label>
+                            <input type="date" class="form-control" name="endDate" id="endDate" autocomplete="off">
+                        </div>
+                        <div class="offset-2 col-3">
+                            <label for="startTime">От времени (включая)</label>
+                            <input type="time" class="form-control" name="startTime" id="startTime" autocomplete="off">
+                        </div>
+                        <div class="col-3">
+                            <label for="endTime">До времени (исключая)</label>
+                            <input type="time" class="form-control" name="endTime" id="endTime" autocomplete="off">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-right">
+                <button class="btn btn-danger" onclick="clearFilter()">
+                    <span class="fa fa-remove"></span>
+                    Отменить
+                </button>
+                <button class="btn btn-primary" onclick="onFilter()">
+                    <span class="fa fa-filter"></span>
+                    Отфильтровать
+                </button>
+            </div>
+        </div>
+        <br>
         <button class="btn btn-primary" onclick="add()">
             <span class="fa fa-plus"></span>
             <spring:message code="common.add"/>
@@ -52,7 +65,7 @@
             </thead>
             <c:forEach items="${requestScope.meals}" var="meal">
                 <jsp:useBean id="meal" type="ru.javawebinar.topjava.to.MealTo"/>
-                <tr id="${meal.id}" class="${meal.excess ? "text-danger" : ""}">
+                <tr id="${meal.id}" class="${meal.excess ? "text-danger" : "text-success"}">
                     <td>${fn:formatDateTime(meal.dateTime)}</td>
                     <td>${meal.description}</td>
                     <td>${meal.calories}</td>
@@ -77,7 +90,7 @@
 
                     <div class="form-group">
                         <label for="dateTime" class="col-form-label">Дата/Время</label>
-                        <input type="text" class="form-control" id="dateTime" name="dateTime" autocomplete="off" placeholder="Дата/Время">
+                        <input type="datetime-local" class="form-control" id="dateTime" name="dateTime" autocomplete="off" placeholder="Дата/Время">
                     </div>
 
                     <div class="form-group">

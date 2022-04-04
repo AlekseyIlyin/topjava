@@ -37,10 +37,28 @@ $(function () {
             ]
         })
     );
-
-    $.datetimepicker.setLocale("ru");
-
-    $('#dateTime').datetimepicker({
-        format: 'Y-m-d H:i'
-    });
 });
+
+function clearFilter() {
+    $("#filter")[0].reset();
+    $.get(mealAjaxUrl, updateTable);
+}
+
+function onFilter() {
+    let filter = '';
+    let fields = $('#filter input').serializeArray();
+    $.each(fields, function ( index, field) {
+        if (filter) {
+            filter = filter.concat('&');
+        }
+        filter = filter.concat(field.name, '=', field.value);
+    })
+    if (filter.length > 0) {
+        filter = 'filter?' + filter
+        $.get(mealAjaxUrl.concat(filter), function (data) {
+            ctx.datatableApi.clear().rows.add(data).draw();
+        });
+    } else {
+        updateTable();
+    }
+}
