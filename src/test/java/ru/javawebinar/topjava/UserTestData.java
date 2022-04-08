@@ -52,7 +52,7 @@ public class UserTestData {
 
     public static User getEnable(User prototype) {
         User enableUser = new User(prototype);
-        enableUser.setEnabled(!enableUser.isEnabled());
+        enableUser.setEnabled(true);
         return enableUser;
     }
 }
